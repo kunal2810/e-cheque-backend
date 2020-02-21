@@ -1,14 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const chequeController = require('../controller/chequeController');
+const userController = require('../controller/userController');
 const sendVerifyOTP = require('../functions/sendVerifyOTP');
 
 router.get('/',(request,response) => {
     response.send("Welcome to the E-Cheque");
 });
 
+router.post('/register',(request,response) => {
+    userController.registerUser(request.body,function(result){
+        response.send(result);
+    })
+});
+
+router.post('/login',(request,response) => {
+    userController.loginUser(request.body,function(result){
+        response.send(result);
+    })
+});
+
 router.post('/chequeDetails',(request,response) => {
-    console.log("request.body",request.body)
     chequeController.issueCheque(request.body,function(result){
         response.send(result);
     })
@@ -35,6 +47,12 @@ router.post('/searchCheque',(request,response) => {
 
 router.post('/depositCheque',(request,response) => {
     chequeController.depositCheque(request.body, function(result){
+        response.send(result);
+    });
+});
+
+router.post('/fetchAllDetails',(request,response) => {
+    userController.dashboardDetails(request.body, function(result){
         response.send(result);
     });
 });

@@ -3,6 +3,7 @@ const ChequeInfo = require('../daoImpl/chequeInfo');
 
 
 function issueCheque(body, callback) {
+    let payer_id = body.payer_id;
     let payeeName = body.payeeName;
     let amtWords = body.amtWords;
     let amtRs = body.amtRs;
@@ -13,6 +14,7 @@ function issueCheque(body, callback) {
     let chequeNo = Math.floor(100000 + Math.random() * 900000);
 
     let chequeObject = {
+        payer_id,
         payeeName,
         amtWords,
         amtRs,
@@ -28,13 +30,13 @@ function issueCheque(body, callback) {
     sendOtp.setOtpExpiry('90');
 
     sendOtp.send(mobile, "echque", chequeNo, function (error, data) {
+        console.log("cheque sent res", data)
         if (data.type != 'success') {
             callback({
                 "result": "error"
             })
         }
         else {
-            console.log(data)
             ChequeInfo.saveChequeDetails(chequeObject)
                 .then((result) => {
                     callback(result);
@@ -57,13 +59,15 @@ function searchCheque(body, callback){
 }
 
 function depositCheque(body, callback){
-    let chequeNo = body.chequeNo; 
+    let payee_id = body.payee_id;
+    let chequeNo = body.chequeNo;
 
-    ChequeInfo.depositChequeDetails(chequeNo)
+    ChequeInfo.depositChequeDetails(chequeNo,payee_id)
     .then((result) => {
         callback(result)
     })
 }
+
 
 module.exports = {
     issueCheque,
